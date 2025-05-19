@@ -4,13 +4,27 @@ import torch
 import nemo.collections.asr as nemo_asr
 from nemo.collections.asr.metrics.wer import word_error_rate
 import valohai
-
+import json
 
 model_path = valohai.inputs('model').path()
 test_manifest_path = valohai.inputs('test_manifest').path()
 
 print(f"Loading model from: {model_path}")
 print(f"Using test manifest: {test_manifest_path}")
+
+def flatten_audio_paths(file_path, new_input_dir_name):
+    updated_lines = []
+    with open(file_path, 'r') as infile:
+        for line in infile:
+            data = json.loads(line)
+            filename = os.path.basename(data['audio_filepath'])
+            data['audio_filepath'] = f"/valohai/inputs/{new_input_dir_name}/{filename}"
+            updated_lines.append(json.dumps(data))
+    
+    with open(file_path, 'w') as outfile:
+        outfile.write('\n'.join(updated_lines) + '\n')
+
+flatten_audio_paths(test_manifest_path, "test_input")
 
 asr_model = nemo_asr.models.EncDecCTCModel.restore_from(restore_path=model_path)
 asr_model.eval()

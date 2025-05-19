@@ -4,14 +4,14 @@ import nemo.collections.asr as nemo_asr
 import pytorch_lightning as pl
 import os
 import valohai
+import json
+
 
 train_manifest = valohai.inputs("train_manifest").path()
 val_manifest = valohai.inputs("val_manifest").path()
 
 print(f"Train manifest: {train_manifest}")
 print(f"Validation manifest: {val_manifest}")
-
-import json
 
 def flatten_audio_paths(file_path, new_input_dir_name):
     updated_lines = []
