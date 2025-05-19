@@ -62,5 +62,5 @@
     - [prepare-dataset.output.data/*, train-model.input.train_input]
     - [prepare-dataset.output.data/*, train-model.input.val_input]
     - [train-model.output.*.nemo, evaluate-model.input.model]
-    - [prepare-dataset.output.data/test_clean_100.json, evaluate-model.input.test_manifest]
+    - [prepare-dataset.output.data/test_clean.json, evaluate-model.input.test_manifest]
     - [prepare-dataset.output.data/*, evaluate-model.input.test_input]
