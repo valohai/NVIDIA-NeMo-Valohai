@@ -1,0 +1,66 @@
+- step:
+    name: prepare-dataset
+    image: docker.io/python:3.10
+    environment: pro-trial-prod-oci-vm-gpu-a10-1
+    command:
+    - apt-get update && apt-get install -y sox
+    - pip install sox
+    - pip install -r requirements.txt
+    - python prepare-dataset.py --data_root=/valohai/outputs/data --data_sets=mini
+
+- step: 
+    name: train-model
+    image: docker.io/python:3.10
+    environment: pro-trial-prod-oci-vm-gpu-a10-1
+    command:
+    - pip install torch==2.2.1+cu118 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    - pip install Cython
+    - pip install nemo_toolkit[asr]==1.21.0
+    - pip install matplotlib pandas jiwer tqdm
+    - pip install huggingface_hub==0.21.4
+    - pip install -r requirements.txt
+    - python train.py 
+    inputs:
+    - name: train_manifest
+    - name: val_manifest
+    - name: train_input
+    - name: val_input
+  
+- step:
+    name: evaluate-model
+    image: docker.io/python:3.10
+    environment: pro-trial-prod-oci-vm-gpu-a10-1
+    command:
+    - pip install torch==2.2.1+cu118 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    - pip install Cython
+    - pip install nemo_toolkit[asr]==1.21.0
+    - pip install matplotlib pandas jiwer tqdm
+    - pip install huggingface_hub==0.21.4
+    - pip install -r requirements.txt
+    - python evaluate.py 
+    inputs:
+    - name: model
+    - name: test_manifest
+    - name: test_input
+
+- pipeline:
+    name: nemo-train-asr
+    nodes:
+      - name: prepare-dataset
+        step: prepare-dataset
+        type: execution
+      - name: train-model
+        step: train-model
+        type: execution
+      - name: evaluate-model
+        step: evaluate-model
+        type: execution
+
+    edges:
+    - [prepare-dataset.output.data/train_clean_5.json, train-model.input.train_manifest]
+    - [prepare-dataset.output.data/dev_clean_2.json, train-model.input.val_manifest]
+    - [prepare-dataset.output.data/*, train-model.input.train_input]
+    - [prepare-dataset.output.data/*, train-model.input.val_input]
+    - [train-model.output.*.nemo, evaluate-model.input.model]
+    - [prepare-dataset.output.data/test_clean_100.json, evaluate-model.input.test_manifest]
+    - [prepare-dataset.output.data/*, evaluate-model.input.test_input]
