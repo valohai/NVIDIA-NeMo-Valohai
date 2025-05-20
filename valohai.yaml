@@ -20,11 +20,20 @@
     - pip install huggingface_hub==0.21.4
     - pip install -r requirements.txt
     - python train.py 
+    parameters:
+      - name: epochs
+        default: 1
+        type: integer
+      - name: learning_rate
+        default: 0.0001
+        type: float
+      - name: batch_size
+        default: 16
     inputs:
-    - name: train_manifest
-    - name: val_manifest
-    - name: train_input
-    - name: val_input
+      - name: train_manifest
+      - name: val_manifest
+      - name: train_input
+      - name: val_input
   
 - step:
     name: evaluate-model

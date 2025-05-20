@@ -6,6 +6,12 @@ import os
 import valohai
 import json
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--epochs', type=int, default=1)
+    parser.add_argument('--learning_rate', type=float, default=0.0001)
+    parser.add_argument('--batch_size', type=int, default=16)
+    return parser.parse_args()
 
 train_manifest = valohai.inputs("train_manifest").path()
 val_manifest = valohai.inputs("val_manifest").path()
@@ -30,10 +36,11 @@ def flatten_audio_paths(file_path, new_input_dir_name):
 flatten_audio_paths(train_manifest, "train_input")
 flatten_audio_paths(val_manifest, "val_input")
 
+args = parse_args()
 
-batch_size = 16
-epochs = 1
-learning_rate = 1e-4
+batch_size = args.batch_size
+epochs = args.epochs
+learning_rate = args.learning_rate
 
 # Load pretrained QuartzNet15x5 model
 model = nemo_asr.models.EncDecCTCModel.from_pretrained("stt_en_quartznet15x5")
