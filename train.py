@@ -5,6 +5,7 @@ import pytorch_lightning as pl
 import os
 import valohai
 import json
+import torch  # Add torch import
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -35,6 +36,18 @@ def flatten_audio_paths(file_path, new_input_dir_name):
 
 flatten_audio_paths(train_manifest, "train_input")
 flatten_audio_paths(val_manifest, "val_input")
+
+print(f"PyTorch version: {torch.__version__}")
+print(f"CUDA available: {torch.cuda.is_available()}")
+print(f"CUDA version: {torch.version.cuda if torch.cuda.is_available() else 'N/A'}")
+
+
+# Check if GPU is available
+if torch.cuda.is_available():
+    print(f"GPU is available: {torch.cuda.get_device_name(0)}")
+    print(f"Number of GPUs available: {torch.cuda.device_count()}")
+else:
+    print("No GPU found, will use CPU")
 
 args = parse_args()
 
@@ -74,10 +87,11 @@ model.setup_optimization(optim_config={
 
 # Initialize the PyTorch Lightning trainer
 trainer = pl.Trainer(
-    accelerator="auto",      
-    devices=1,
+    accelerator="gpu",       
+    devices=1,               
     max_epochs=epochs,
-    precision="16-mixed",           
+    precision="16-mixed",    
+    benchmark=True,          
 )
 
 # Run training
