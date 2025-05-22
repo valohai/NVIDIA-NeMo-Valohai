@@ -29,7 +29,6 @@ import subprocess
 import tarfile
 import urllib.request
 
-from sox import Transformer
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description="LibriSpeech Data download")
@@ -116,32 +115,11 @@ def __process_transcript(file_path: str, dst_folder: str):
 
             flac_file = os.path.join(root, id + ".flac")
             wav_file = os.path.join(dst_folder, id + ".wav")
-            if not os.path.exists(wav_file):
-                Transformer().build(flac_file, wav_file)
-
-            duration = None
-
-            try:
-                duration_output = subprocess.check_output(
-                    f"sox {wav_file} -n stat",
-                    shell=True,
-                    stderr=subprocess.STDOUT,
-                )
-                decoded_output = duration_output.decode("utf-8")
-                # 👇 Correctly parse stderr (where `stat` prints info)
-                for line in decoded_output.split("\n"):
-                    if "Length (seconds):" in line:
-                        duration = float(line.split(":")[1].strip())
-                        break
-
-                if duration is None:
-                    print(f"[WARNING] Duration not found for {wav_file}. Skipping this file.")
-                    continue
-
-            except subprocess.CalledProcessError as e:
-                print(f"[ERROR] sox failed for {wav_file}: {e.output.decode('utf-8')}")
-                continue
-
+            # Convert to 1-channel FLAC
+            subprocess.check_call(["sox", flac_file, "-c", "1", wav_file])
+            # Grab duration
+            duration_output = subprocess.check_output(["sox", "--info", "-D", wav_file], text=True)
+            duration = float(duration_output.strip())
             entry = {
                 "audio_filepath": os.path.abspath(wav_file),
                 "duration": duration,
