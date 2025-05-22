@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Fine-tuning NVIDIA's NeMo QuartzNet model for Automatic Speech Recognition (ASR)"
 requires-python = ">=3.10"
 dependencies = [
-    "sox",
     "tqdm",
     "valohai-utils",
 ]
