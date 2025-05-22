@@ -1,0 +1,33 @@
+[project]
+name = "nvidia-nemo-valohai"
+version = "0.1.0"
+description = "Fine-tuning NVIDIA's NeMo QuartzNet model for Automatic Speech Recognition (ASR)"
+requires-python = ">=3.10"
+dependencies = [
+    "sox",
+    "tqdm",
+    "valohai-utils",
+]
+
+[project.optional-dependencies]
+train = [
+    "Cython",
+    "huggingface_hub==0.21.4",
+    "jiwer",
+    "matplotlib",
+    "nemo_toolkit[asr]==1.21.0",
+    "pandas",
+    "youtokentome @ git+https://github.com/gburlet/YouTokentome.git@e0fec1f6e52fc75a841ed3fab8f583448b1deedf",
+    # See https://github.com/VKCOM/YouTokenToMe/pull/108
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = [
+    "B",
+    "COM",
+    "I",
+]

@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  Lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: akx/pre-commit-uv-action@v0.1.0
+        env:
+          RUFF_OUTPUT_FORMAT: github

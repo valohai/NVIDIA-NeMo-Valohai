@@ -4,8 +4,7 @@
     environment: pro-trial-prod-oci-vm-gpu-a10-1
     command:
     - apt-get update && apt-get install -y sox
-    - pip install sox
-    - pip install -r requirements.txt
+    - pip install -e .
     - python prepare-dataset.py --data_root=/valohai/outputs/data --data_sets=mini
 
 - step: 
@@ -14,11 +13,7 @@
     environment: pro-trial-prod-oci-vm-gpu-a10-1
     command:
     - pip install torch==2.2.1+cu118 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-    - pip install Cython
-    - pip install nemo_toolkit[asr]==1.21.0
-    - pip install matplotlib pandas jiwer tqdm
-    - pip install huggingface_hub==0.21.4
-    - pip install -r requirements.txt
+    - pip install -e .[train]
     - python train.py {parameters}
     parameters:
       - name: epochs
@@ -41,11 +36,7 @@
     environment: pro-trial-prod-oci-vm-gpu-a10-1
     command:
     - pip install torch==2.2.1+cu118 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-    - pip install Cython
-    - pip install nemo_toolkit[asr]==1.21.0
-    - pip install matplotlib pandas jiwer tqdm
-    - pip install huggingface_hub==0.21.4
-    - pip install -r requirements.txt
+    - pip install -e .[train]
     - python evaluate.py 
     inputs:
     - name: model

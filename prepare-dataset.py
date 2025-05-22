@@ -28,11 +28,9 @@ import os
 import subprocess
 import tarfile
 import urllib.request
-from time import sleep
 
 from sox import Transformer
 from tqdm import tqdm
-
 
 parser = argparse.ArgumentParser(description="LibriSpeech Data download")
 parser.add_argument("--data_root", required=True, default=None, type=str)
@@ -108,6 +106,7 @@ def __extract_file(filepath: str, data_dir: str):
     except Exception:
         logging.info("Not extracting. Maybe already there?")
 
+
 def __process_transcript(file_path: str, dst_folder: str):
     entries = []
     root = os.path.dirname(file_path)
@@ -125,7 +124,9 @@ def __process_transcript(file_path: str, dst_folder: str):
 
             try:
                 duration_output = subprocess.check_output(
-                    f"sox {wav_file} -n stat", shell=True, stderr=subprocess.STDOUT
+                    f"sox {wav_file} -n stat",
+                    shell=True,
+                    stderr=subprocess.STDOUT,
                 )
                 decoded_output = duration_output.decode("utf-8")
                 # 👇 Correctly parse stderr (where `stat` prints info)
@@ -145,12 +146,11 @@ def __process_transcript(file_path: str, dst_folder: str):
             entry = {
                 "audio_filepath": os.path.abspath(wav_file),
                 "duration": duration,
-                "text": transcript_text
+                "text": transcript_text,
             }
             entries.append(entry)
 
     return entries
-
 
 
 def __process_data(data_folder: str, dst_folder: str, manifest_file: str, num_workers: int):
@@ -170,7 +170,7 @@ def __process_data(data_folder: str, dst_folder: str, manifest_file: str, num_wo
     files = []
     entries = []
 
-    for root, dirnames, filenames in os.walk(data_folder):
+    for root, _dirnames, filenames in os.walk(data_folder):
         for filename in fnmatch.filter(filenames, "*.trans.txt"):
             files.append(os.path.join(root, filename))
 
@@ -186,7 +186,6 @@ def __process_data(data_folder: str, dst_folder: str, manifest_file: str, num_wo
 
 
 def main():
-    
     data_root = args.data_root
     data_sets = args.data_sets
     num_workers = args.num_workers
@@ -207,8 +206,8 @@ def main():
         __extract_file(filepath, data_root)
         logging.info("Processing {0}".format(data_set))
         __process_data(
-            os.path.join(os.path.join(data_root, "LibriSpeech"), data_set.replace("_", "-"),),
-            os.path.join(os.path.join(data_root, "LibriSpeech"), data_set.replace("_", "-"),) + "-processed",
+            os.path.join(os.path.join(data_root, "LibriSpeech"), data_set.replace("_", "-")),
+            os.path.join(os.path.join(data_root, "LibriSpeech"), data_set.replace("_", "-")) + "-processed",
             os.path.join(data_root, data_set + ".json"),
             num_workers=num_workers,
         )
