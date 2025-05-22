@@ -35,7 +35,7 @@ from tqdm import tqdm
 parser = argparse.ArgumentParser(description="LibriSpeech Data download")
 parser.add_argument("--data_root", required=True, default=None, type=str)
 parser.add_argument("--data_sets", default="dev_clean", type=str)
-parser.add_argument("--num_workers", default=4, type=int)
+parser.add_argument("--num_workers", default=max(4, multiprocessing.cpu_count() + 1), type=int)
 parser.add_argument("--log", dest="log", action="store_true", default=False)
 args = parser.parse_args()
 
