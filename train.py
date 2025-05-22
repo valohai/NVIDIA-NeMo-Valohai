@@ -93,6 +93,15 @@ def train(
 
 def main() -> None:
     args = parse_args()
+    if not (args.train_manifest and os.path.exists(args.train_manifest)):
+        raise ValueError(f"Train manifest path does not exist: {args.train_manifest}")
+    if not (args.val_manifest and os.path.exists(args.val_manifest)):
+        raise ValueError(f"Validation manifest path does not exist: {args.val_manifest}")
+    if not os.path.exists(args.train_input):
+        raise ValueError(f"Train input path does not exist: {args.train_input}")
+    if not os.path.exists(args.val_input):
+        raise ValueError(f"Validation input path does not exist: {args.val_input}")
+
     with (
         tempfile.NamedTemporaryFile(suffix=".train.json", delete=False) as train_manifest_tf,
         tempfile.NamedTemporaryFile(suffix=".val.json", delete=False) as val_manifest_tf,

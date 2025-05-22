@@ -10,8 +10,8 @@ from nemo.collections.asr.metrics.wer import word_error_rate
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_path", default=valohai.inputs("model").path(), required=True)
-    parser.add_argument("--test_manifest_path", default=valohai.inputs("test_manifest").path(), required=True)
+    parser.add_argument("--model_path", default=valohai.inputs("model").path())
+    parser.add_argument("--test_manifest_path", default=valohai.inputs("test_manifest").path())
     parser.add_argument("--output_dir", default=os.getenv("VH_OUTPUTS_DIR", ".outputs"))
     parser.add_argument("--audio_base_dir", default="/valohai/inputs/test_input")
     return parser.parse_args()
@@ -36,6 +36,12 @@ def main():
     test_manifest_path = args.test_manifest_path
     output_dir = args.output_dir
     audio_base_dir = args.audio_base_dir
+    if not (model_path and os.path.exists(model_path)):
+        raise ValueError(f"Model path does not exist: {model_path}")
+    if not (test_manifest_path and os.path.exists(test_manifest_path)):
+        raise ValueError(f"Test manifest path does not exist: {test_manifest_path}")
+    if not os.path.exists(audio_base_dir):
+        raise ValueError(f"Audio base directory does not exist: {audio_base_dir}")
 
     audio_filepaths, ground_truths = load_manifest(test_manifest_path, audio_base_dir=audio_base_dir)
 
