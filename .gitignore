@@ -1,2 +1,4 @@
-/temp
+/.outputs
 /data
+/lightning_logs
+/temp
